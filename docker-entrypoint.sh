@@ -36,7 +36,8 @@ MAX_RETRIES=60
 RETRY_COUNT=0
 
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-  if mysql -h"${DATABASE_HOST:-mysql}" -u"${DATABASE_USER:-tunnelmole}" -p"${DATABASE_PASSWORD:-tunnelmole}" -e "SELECT 1" 2>/dev/null; then
+  # Use a simple TCP connection test as a fallback, or try mysql connection
+  if nc -z "${DATABASE_HOST:-mysql}" 3306 2>/dev/null || mysql -h"${DATABASE_HOST:-mysql}" -u"${DATABASE_USER:-tunnelmole}" -p"${DATABASE_PASSWORD:-tunnelmole}" -e "SELECT 1" 2>/dev/null; then
     echo "MySQL is ready!"
     break
   fi
