@@ -32,11 +32,22 @@ EOF
 
 # Wait for MySQL to be ready
 echo "Waiting for MySQL to be ready..."
-until mysql -h"${DATABASE_HOST:-mysql}" -u"${DATABASE_USER:-tunnelmole}" -p"${DATABASE_PASSWORD:-tunnelmole}" -e "SELECT 1" &> /dev/null; do
-  sleep 1
-done
+MAX_RETRIES=60
+RETRY_COUNT=0
 
-echo "MySQL is ready!"
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+  if mysql -h"${DATABASE_HOST:-mysql}" -u"${DATABASE_USER:-tunnelmole}" -p"${DATABASE_PASSWORD:-tunnelmole}" -e "SELECT 1" 2>/dev/null; then
+    echo "MySQL is ready!"
+    break
+  fi
+  RETRY_COUNT=$((RETRY_COUNT + 1))
+  if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+    echo "Warning: MySQL connection check timed out after $MAX_RETRIES attempts. Continuing anyway..."
+    break
+  fi
+  echo "MySQL not ready yet, retrying... ($RETRY_COUNT/$MAX_RETRIES)"
+  sleep 2
+done
 
 # Execute the main command
 exec "$@"
