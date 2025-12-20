@@ -16,10 +16,11 @@ services:
     networks:
       - tunnelmole-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "tunnelmole", "-ptunnelmole"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 
   tunnelmole:
     build:
