@@ -13,8 +13,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./src/sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
-    ports:
-      - "3306:3306"
     networks:
       - tunnelmole-network
     healthcheck:
@@ -54,9 +52,6 @@ services:
       ENABLE_LOGGING: "false"
       CONNECTION_TIMEOUT: 43200
       TIMEOUT_CHECK_FREQUENCY: 5000
-    ports:
-      - "8000:8000"  # HTTP port
-      - "8080:8080"  # WebSocket port
     networks:
       - tunnelmole-network
 
