@@ -1,11 +1,38 @@
-### docker-compose.yml for external services. Run Tunnelmole itself outside of Docker with node.
-version: '3.8'
+version: "3.8"
 
 services:
   mysql:
     image: mysql:8.0.32
-    container_name: mysql-8.0.32
+    container_name: tunnelmole-mysql
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: password
-    ports:
-      - "3306:3306"
+      MYSQL_DATABASE: tunnelmole
+      MYSQL_USER: tunnelmole
+      MYSQL_PASSWORD: tunnelmole
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  tunnelmole:
+    image: node:18-alpine
+    container_name: tunnelmole-server
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install && npm run build && node dist/srv/index.js"
+    volumes:
+      - .:/app
+    depends_on:
+      - mysql
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: tunnelmole
+      DATABASE_PASSWORD: tunnelmole
+      DATABASE_NAME: tunnelmole
+      NODE_ENV: production
+      PORT: 8080
+    expose:
+      - "8080"
+
+volumes:
+  mysql_data:
