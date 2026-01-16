@@ -1,3 +1,6 @@
+### docker-compose.yml for running Tunnelmole service in Docker
+### This includes both MySQL and the Tunnelmole service containers
+
 services:
   mysql:
     image: mysql:8.0.32
@@ -53,8 +56,6 @@ services:
       ENABLE_LOGGING: "false"
       CONNECTION_TIMEOUT: 43200
       TIMEOUT_CHECK_FREQUENCY: 5000
-    # Port mappings are handled by Coolify automatically
-    # The EXPOSE directives in Dockerfile tell Coolify which ports to map
     networks:
       - tunnelmole-network
 
